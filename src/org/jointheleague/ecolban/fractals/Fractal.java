@@ -12,6 +12,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import static java.lang.Math.*;
+
+
 @SuppressWarnings("serial")
 public class Fractal extends JPanel implements Runnable {
 
@@ -27,15 +30,27 @@ public class Fractal extends JPanel implements Runnable {
                     new AffineTransform(0.5, 0.0, 0.0, 0.5, UNIT / 2.0, UNIT / 2.0),
                     new AffineTransform(0.5, 0.0, 0.0, 0.5, UNIT / 4.0, 0.0)
     };
+    
+	private static final AffineTransform[] KOCH_TRANSFORMS = new AffineTransform[] {
+	        new AffineTransform(1.0 / 3.0, 0.0, 0.0, 1.0 / 3.0, 0.0, 0.0),
+	        new AffineTransform(cos(PI / 3.0) / 3.0, sin(PI / 3) / 3,
+	                -sin(PI / 3) / 3.0, cos(PI / 3.0) / 3.0, UNIT / 3.0, 0.0),
+	        new AffineTransform(
+	                cos(2.0 * PI / 3.0) / 3.0, sin(2.0 * PI / 3) / 3,
+	                sin(2.0 * PI / 3) / 3.0, -cos(2.0 * PI / 3.0) / 3.0,
+	                2.0 * UNIT / 3.0, 0.0),
+	        new AffineTransform(1.0 / 3.0, 0.0, 0.0, 1.0 / 3.0,
+	                2.0 * UNIT / 3.0, 0.0)
+	};
 
     public static void main(String[] args) throws InvocationTargetException, InterruptedException {
         Fractal f = new Fractal();
         SwingUtilities.invokeAndWait(f);
 
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < 7; i++) {
             f.level = i;
             f.repaint();
-            Thread.sleep(300);
+            Thread.sleep(1000);
         }
     }
 
@@ -55,7 +70,7 @@ public class Fractal extends JPanel implements Runnable {
         g2.fillRect(0, 0, getWidth(), getHeight());
         g2.setColor(Color.GRAY);
         g2.translate(MARGIN, MARGIN);
-        drawFractal(SIERPINSKI_TRANSFORMS, g2, level);
+        drawFractal(KOCH_TRANSFORMS, g2, level);
     }
 
     private void drawFractal(AffineTransform[] transforms, Graphics2D g2, int level) {
