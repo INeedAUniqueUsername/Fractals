@@ -14,76 +14,78 @@ import javax.swing.SwingUtilities;
 
 import static java.lang.Math.*;
 
-
 @SuppressWarnings("serial")
 public class Fractal extends JPanel implements Runnable {
 
-    private static final int FRAME_SIZE = 1000;
-    private static final int MARGIN = 10;
-    private static final double UNIT = FRAME_SIZE - 2 * MARGIN;
-    private static final Rectangle2D UNIT_RECTANGLE = new Rectangle2D.Double(0.0, 0.0, UNIT, UNIT);
+	private static final int FRAME_SIZE = 1000;
+	private static final int MARGIN = 10;
+	private static final double UNIT = FRAME_SIZE - 2 * MARGIN;
+	private static final Rectangle2D UNIT_RECTANGLE =
+	        new Rectangle2D.Double(0.0, 0.0, 1.0, 1.0);
 
-    private int level;
+	private int level;
 
-    private static final AffineTransform[] SIERPINSKI_TRANSFORMS = new AffineTransform[] {
-                    new AffineTransform(0.5, 0.0, 0.0, 0.5, 0.0, UNIT / 2.0),
-                    new AffineTransform(0.5, 0.0, 0.0, 0.5, UNIT / 2.0, UNIT / 2.0),
-                    new AffineTransform(0.5, 0.0, 0.0, 0.5, UNIT / 4.0, 0.0)
-    };
-    
+	private static final AffineTransform[] SIERPINSKI_TRANSFORMS = new AffineTransform[] {
+	        new AffineTransform(0.5, 0.0, 0.0, 0.5, 0.0, 0.5),
+	        new AffineTransform(0.5, 0.0, 0.0, 0.5, 0.5, 0.5),
+	        new AffineTransform(0.5, 0.0, 0.0, 0.5, 0.25, 0.0)
+	};
+
 	private static final AffineTransform[] KOCH_TRANSFORMS = new AffineTransform[] {
 	        new AffineTransform(1.0 / 3.0, 0.0, 0.0, 1.0 / 3.0, 0.0, 0.0),
 	        new AffineTransform(cos(PI / 3.0) / 3.0, sin(PI / 3) / 3,
-	                -sin(PI / 3) / 3.0, cos(PI / 3.0) / 3.0, UNIT / 3.0, 0.0),
+	                -sin(PI / 3) / 3.0, cos(PI / 3.0) / 3.0, 1.0 / 3.0, 0.0),
 	        new AffineTransform(
 	                cos(2.0 * PI / 3.0) / 3.0, sin(2.0 * PI / 3) / 3,
 	                sin(2.0 * PI / 3) / 3.0, -cos(2.0 * PI / 3.0) / 3.0,
-	                2.0 * UNIT / 3.0, 0.0),
-	        new AffineTransform(1.0 / 3.0, 0.0, 0.0, 1.0 / 3.0,
-	                2.0 * UNIT / 3.0, 0.0)
+	                2.0 / 3.0, 0.0),
+	        new AffineTransform(1.0 / 3.0, 0.0, 0.0, 1.0 / 3.0, 2.0 / 3.0, 0.0)
 	};
 
-    public static void main(String[] args) throws InvocationTargetException, InterruptedException {
-        Fractal f = new Fractal();
-        SwingUtilities.invokeAndWait(f);
+	public static void main(String[] args) throws InvocationTargetException,
+	        InterruptedException {
+		Fractal f = new Fractal();
+		SwingUtilities.invokeAndWait(f);
 
-        for (int i = 0; i < 7; i++) {
-            f.level = i;
-            f.repaint();
-            Thread.sleep(1000);
-        }
-    }
+		for (int i = 0; i < 8; i++) {
+			f.level = i;
+			f.repaint();
+			Thread.sleep(1000);
+		}
+	}
 
-    public void run() {
-        JFrame frame = new JFrame();
-        setPreferredSize(new Dimension(FRAME_SIZE, FRAME_SIZE));
-        frame.add(this);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
+	public void run() {
+		JFrame frame = new JFrame();
+		setPreferredSize(new Dimension(FRAME_SIZE, FRAME_SIZE));
+		frame.add(this);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
+	}
 
-    @Override
-    public void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(Color.WHITE);
-        g2.fillRect(0, 0, getWidth(), getHeight());
-        g2.setColor(Color.GRAY);
-        g2.translate(MARGIN, MARGIN);
-        drawFractal(KOCH_TRANSFORMS, g2, level);
-    }
+	@Override
+	public void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, getWidth(), getHeight());
+		g2.setColor(Color.GRAY);
+		g2.translate(MARGIN, MARGIN);
+		g2.scale(UNIT, UNIT);
+		drawFractal(KOCH_TRANSFORMS, g2, level);
+	}
 
-    private void drawFractal(AffineTransform[] transforms, Graphics2D g2, int level) {
-        if (level == 0) {
-            g2.fill(UNIT_RECTANGLE);
-        } else {
-            AffineTransform cachedTransform = g2.getTransform();
-            for (AffineTransform t : transforms) {
-                g2.transform(t);
-                drawFractal(transforms, g2, level - 1);
-                g2.setTransform(cachedTransform);
-            }
-        }
-    }
+	private void drawFractal(AffineTransform[] transforms, Graphics2D g2,
+	        int level) {
+		if (level == 0) {
+			g2.fill(UNIT_RECTANGLE);
+		} else {
+			AffineTransform cachedTransform = g2.getTransform();
+			for (AffineTransform t : transforms) {
+				g2.transform(t);
+				drawFractal(transforms, g2, level - 1);
+				g2.setTransform(cachedTransform);
+			}
+		}
+	}
 
 }
