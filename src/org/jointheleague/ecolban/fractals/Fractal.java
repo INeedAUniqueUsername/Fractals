@@ -15,7 +15,7 @@ import javax.swing.SwingUtilities;
 import static java.lang.Math.*;
 
 @SuppressWarnings("serial")
-public class Fractal extends JPanel implements Runnable {
+public class Fractal extends JPanel {
 
 	private static final int FRAME_SIZE = 1000;
 	private static final int MARGIN = 10;
@@ -45,7 +45,7 @@ public class Fractal extends JPanel implements Runnable {
 	public static void main(String[] args) throws InvocationTargetException,
 	        InterruptedException {
 		Fractal f = new Fractal();
-		SwingUtilities.invokeAndWait(f);
+		SwingUtilities.invokeAndWait(() -> f.buildGui());
 
 		for (int i = 0; i < 8; i++) {
 			f.level = i;
@@ -54,7 +54,7 @@ public class Fractal extends JPanel implements Runnable {
 		}
 	}
 
-	public void run() {
+	private void buildGui() {
 		JFrame frame = new JFrame();
 		setPreferredSize(new Dimension(FRAME_SIZE, FRAME_SIZE));
 		frame.add(this);
