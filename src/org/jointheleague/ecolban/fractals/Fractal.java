@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -24,6 +25,7 @@ public class Fractal extends JPanel {
 	        new Rectangle2D.Double(0.0, 0.0, 1.0, 1.0);
 
 	private int level;
+	private Random rng = new Random();
 
 	private static final AffineTransform[] SIERPINSKI_TRANSFORMS = new AffineTransform[] {
 	        new AffineTransform(0.5, 0.0, 0.0, 0.5, 0.0, 0.5),
@@ -41,6 +43,14 @@ public class Fractal extends JPanel {
 	                2.0 / 3.0, 0.0),
 	        new AffineTransform(1.0 / 3.0, 0.0, 0.0, 1.0 / 3.0, 2.0 / 3.0, 0.0)
 	};
+	
+	private static final AffineTransform[] TEST_TRANSFORMS = new AffineTransform[] {
+			// new AffineTransform(-0.38, 0.0, 0.0, 0.38, 1.0, 0.0),
+			new AffineTransform(0.0, -0.6, 0.6, 0.0, 0.0, 0.6),
+			new AffineTransform(-0.6, 0.0, 0.0, -0.6, 1.0, 1.0),
+			new AffineTransform(0.38, 0.0, 0.0, -0.38, 0.0, 1.0)
+	};
+
 
 	public static void main(String[] args) throws InvocationTargetException,
 	        InterruptedException {
@@ -68,7 +78,6 @@ public class Fractal extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, getWidth(), getHeight());
-		g2.setColor(Color.GRAY);
 		g2.translate(MARGIN, MARGIN);
 		g2.scale(UNIT, UNIT);
 		drawFractal(KOCH_TRANSFORMS, g2, level);
@@ -77,6 +86,7 @@ public class Fractal extends JPanel {
 	private void drawFractal(AffineTransform[] transforms, Graphics2D g2,
 	        int level) {
 		if (level == 0) {
+			g2.setColor(randomColor());
 			g2.fill(UNIT_RECTANGLE);
 		} else {
 			AffineTransform cachedTransform = g2.getTransform();
@@ -86,6 +96,10 @@ public class Fractal extends JPanel {
 				g2.setTransform(cachedTransform);
 			}
 		}
+	}
+	
+	private Color randomColor() {
+		return new Color(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
 	}
 
 }
