@@ -16,13 +16,14 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("serial")
 public class FractalRenderer extends JPanel {
 
-	private static final Dimension PREFERRED_DIMENSION = new Dimension(1000, 1000);
+//	private static final Dimension PREFERRED_DIMENSION = new Dimension(1020, 1020);
+	private static final Dimension PREFERRED_DIMENSION = new Dimension(1292, 1020);
 	private static final int MARGIN = 10;
 	private static final Random RNG = new Random();
 
 	private int level;
 
-	private FractalSpec fractal = new Sierpinski();
+	private FractalSpec fractal = new Test3();
 
 	public static void main(String[] args) throws InvocationTargetException, InterruptedException {
 		FractalRenderer f = new FractalRenderer();
@@ -30,7 +31,7 @@ public class FractalRenderer extends JPanel {
 		for (int i = 0; i <= f.fractal.getLevel(); i++) {
 			f.level = i;
 			f.repaint();
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 		}
 	}
 
