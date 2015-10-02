@@ -10,12 +10,11 @@ public class Test4 implements FractalSpec {
 
 	@Override
 	public AffineTransform[] getTransforms() {
-		double golden = (-1.0 + sqrt(5.0)) / 2.0;
+		double golden = (-1.0 + sqrt(5.0)) / 2.0; // golden ratio
 		double golden2 = 1.0 - golden; // also == golden * golden
 		return new AffineTransform[] {
 		        new AffineTransform(0.0, -1.0, golden, 0, 0.0, 1.0),
-//		        new AffineTransform(0.0, golden, -golden2, 0.0, 1.0, golden2),
-		        new AffineTransform(golden2, 0.0, 0.0, golden2, golden, 0.0)
+		        new AffineTransform(0.0, golden, -golden2, 0.0, 1.0, 0.0)
 		};
 	}
 
