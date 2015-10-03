@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
+import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -20,34 +21,35 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
-public class FractalRenderer extends JPanel implements Printable {
+public class Fractal extends JPanel implements Printable {
 
 	// private static final Dimension PREFERRED_DIMENSION = new Dimension(1000,
 	// 1000);
 	private static final int MARGIN = 10;
 	private static final Random RNG = new Random();
-
+	private final FractalSpec fractalSpec;
 	private int level;
 
-	private FractalSpec fractal = new Test3();
-
 	public static void main(String[] args) throws InvocationTargetException,
-	        InterruptedException {
-		FractalRenderer f = new FractalRenderer();
+			InterruptedException {
+		Fractal f = new Fractal(new Test3());
 		SwingUtilities.invokeAndWait(() -> f.buildGui());
-		for (int i = 0; i <= f.fractal.getLevel(); i++) {
+		for (int i = 0; i <= f.fractalSpec.getLevel(); i++) {
 			f.level = i;
 			f.repaint();
 			Thread.sleep(1000);
 		}
 	}
 
+	public Fractal(FractalSpec spec) {
+		this.fractalSpec = spec;
+	}
+
 	private void buildGui() {
 		JFrame frame = new JFrame();
 		frame.setLayout(new BorderLayout());
-		double h = Toolkit.getDefaultToolkit().getScreenSize().getHeight() - 2
-		        * MARGIN - 50;
-		double w = h * 1.272;
+		double h = 786;
+		double w = 1000;
 		setPreferredSize(new Dimension((int) w, (int) h));
 		frame.add(this, BorderLayout.CENTER);
 		JPanel buttonPanel = new JPanel();
@@ -67,11 +69,10 @@ public class FractalRenderer extends JPanel implements Printable {
 		g2.fillRect(0, 0, getWidth(), getHeight());
 		g2.translate(MARGIN, MARGIN);
 		g2.scale(getWidth() - 2 * MARGIN, getHeight() - 2 * MARGIN);
-		fillFractal(g2, fractal.getTransforms(), level);
+		fillFractal(g2, fractalSpec.getTransforms(), level);
 	}
 
-	private void fillFractal(Graphics2D g2, AffineTransform[] transforms,
-	        int level) {
+	private void fillFractal(Graphics2D g2, AffineTransform[] transforms, int level) {
 		if (level == 0) {
 			g2.setColor(randomColor());
 			g2.fillRect(0, 0, 1, 1);
@@ -90,8 +91,19 @@ public class FractalRenderer extends JPanel implements Printable {
 	}
 
 	private void printFractal() {
+		Paper paper = new Paper();
+		paper.setSize(8.5 * 72, 11 * 72); // US Letter format
+		double imageHeight = 8 * 72;
+		double imageWidth = imageHeight / Math.sqrt((-1 + Math.sqrt(5)) / 2);
+		paper.setImageableArea(
+				(paper.getWidth() - imageHeight) / 2, 
+				(paper.getHeight() - imageWidth) / 2,
+				imageHeight, imageWidth);
+		PageFormat pf = new PageFormat();
+		pf.setOrientation(PageFormat.LANDSCAPE);
+		pf.setPaper(paper);
 		PrinterJob job = PrinterJob.getPrinterJob();
-		job.setPrintable(this);
+		job.setPrintable(this, pf);
 		boolean ok = job.printDialog();
 		if (ok) {
 			try {
@@ -104,7 +116,7 @@ public class FractalRenderer extends JPanel implements Printable {
 
 	@Override
 	public int print(Graphics g, PageFormat pf, int page)
-	        throws PrinterException {
+			throws PrinterException {
 		if (page > 0) {
 			return NO_SUCH_PAGE;
 		}
@@ -112,7 +124,7 @@ public class FractalRenderer extends JPanel implements Printable {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.translate(pf.getImageableX(), pf.getImageableY());
 		g2.scale(pf.getImageableWidth(), pf.getImageableHeight());
-		fillFractal(g2, fractal.getTransforms(), fractal.getLevel());
+		fillFractal(g2, fractalSpec.getTransforms(), fractalSpec.getLevel());
 
 		return PAGE_EXISTS;
 	}
