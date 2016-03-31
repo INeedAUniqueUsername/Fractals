@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
@@ -13,7 +12,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,7 +25,6 @@ public class Fractal extends JPanel implements Printable {
 	// private static final Dimension PREFERRED_DIMENSION = new Dimension(1000,
 	// 1000);
 	private static final int MARGIN = 10;
-	private static final Random RNG = new Random();
 	private final FractalSpec fractalSpec;
 	private int level;
 
@@ -87,7 +85,8 @@ public class Fractal extends JPanel implements Printable {
 	}
 
 	private Color randomColor() {
-		return new Color(RNG.nextInt(256), RNG.nextInt(256), RNG.nextInt(256));
+		ThreadLocalRandom rng = ThreadLocalRandom.current();
+		return new Color(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
 	}
 
 	private void printFractal() {
