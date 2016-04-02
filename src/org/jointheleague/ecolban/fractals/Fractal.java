@@ -22,7 +22,7 @@ public class Fractal extends JPanel{
 
 	public static void main(String[] args) throws InvocationTargetException,
 			InterruptedException {
-		Fractal f = new Fractal(new Sierpinski4());
+		Fractal f = new Fractal(new Sierpinski5());
 		SwingUtilities.invokeAndWait(() -> f.buildGui());
 		for (int i = 0; i <= f.fractalSpec.getLevel(); i++) {
 			f.level = i;
