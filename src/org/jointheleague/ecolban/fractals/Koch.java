@@ -22,7 +22,7 @@ public class Koch implements FractalSpec {
 
 	@Override
 	public int getLevel() {
-		return 5;
+		return 7;
 	}
 
 }

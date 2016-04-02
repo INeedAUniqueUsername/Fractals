@@ -6,31 +6,23 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
-public class Fractal extends JPanel implements Printable {
+public class Fractal extends JPanel{
 
-	// private static final Dimension PREFERRED_DIMENSION = new Dimension(1000,
-	// 1000);
 	private static final int MARGIN = 10;
 	private final FractalSpec fractalSpec;
 	private int level;
 
 	public static void main(String[] args) throws InvocationTargetException,
 			InterruptedException {
-		Fractal f = new Fractal(new Test3());
+		Fractal f = new Fractal(new Sierpinski4());
 		SwingUtilities.invokeAndWait(() -> f.buildGui());
 		for (int i = 0; i <= f.fractalSpec.getLevel(); i++) {
 			f.level = i;
@@ -50,11 +42,6 @@ public class Fractal extends JPanel implements Printable {
 		double w = 1000;
 		setPreferredSize(new Dimension((int) w, (int) h));
 		frame.add(this, BorderLayout.CENTER);
-		JPanel buttonPanel = new JPanel();
-		JButton printButton = new JButton("Print");
-		printButton.addActionListener(e -> printFractal());
-		buttonPanel.add(printButton);
-		frame.add(buttonPanel, BorderLayout.SOUTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
@@ -87,45 +74,6 @@ public class Fractal extends JPanel implements Printable {
 	private Color randomColor() {
 		ThreadLocalRandom rng = ThreadLocalRandom.current();
 		return new Color(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
-	}
-
-	private void printFractal() {
-		Paper paper = new Paper();
-		paper.setSize(8.5 * 72, 11 * 72); // US Letter format
-		double imageHeight = 8 * 72;
-		double imageWidth = imageHeight / Math.sqrt((-1 + Math.sqrt(5)) / 2);
-		paper.setImageableArea(
-				(paper.getWidth() - imageHeight) / 2, 
-				(paper.getHeight() - imageWidth) / 2,
-				imageHeight, imageWidth);
-		PageFormat pf = new PageFormat();
-		pf.setOrientation(PageFormat.LANDSCAPE);
-		pf.setPaper(paper);
-		PrinterJob job = PrinterJob.getPrinterJob();
-		job.setPrintable(this, pf);
-		boolean ok = job.printDialog();
-		if (ok) {
-			try {
-				job.print();
-			} catch (PrinterException ex) {
-				/* The job did not successfully complete */
-			}
-		}
-	}
-
-	@Override
-	public int print(Graphics g, PageFormat pf, int page)
-			throws PrinterException {
-		if (page > 0) {
-			return NO_SUCH_PAGE;
-		}
-
-		Graphics2D g2 = (Graphics2D) g;
-		g2.translate(pf.getImageableX(), pf.getImageableY());
-		g2.scale(pf.getImageableWidth(), pf.getImageableHeight());
-		fillFractal(g2, fractalSpec.getTransforms(), fractalSpec.getLevel());
-
-		return PAGE_EXISTS;
 	}
 
 }
